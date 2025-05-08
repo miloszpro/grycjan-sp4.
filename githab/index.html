@@ -1,0 +1,61 @@
+
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grycjan SP4</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f0f8ff; text-align: center; padding: 2em; }
+    #chatBox, #chatInput, #sendBtn { display: none; }
+    #output { border: 1px solid #ccc; padding: 1em; margin-top: 1em; height: 200px; overflow-y: auto; background: #fff; }
+    input, button { padding: 0.5em; font-size: 1em; }
+  </style>
+</head>
+<body>
+  <h1>Witaj w Grycjan SP4!</h1>
+  <p>Wpisz hasło, aby uruchomić agenta:</p>
+  <input type="text" id="password" placeholder="Wpisz hasło">
+  <button onclick="checkPassword()">Start</button>
+
+  <div id="chatBox">
+    <h2>Grycjan SP4 - Czatuj ze mną!</h2>
+    <p><em>Mogę szukać rzeczy w internecie i odpowiadać na pytania edukacyjne!</em></p>
+    <div id="output"></div>
+    <input type="text" id="chatInput" placeholder="Zadaj pytanie...">
+    <button id="sendBtn" onclick="sendMessage()">Wyślij</button>
+  </div>
+
+  <script>
+    const haslo = "grycjanstart";
+
+    function checkPassword() {
+      const input = document.getElementById("password").value;
+      if (input.toLowerCase() === haslo) {
+        document.getElementById("chatBox").style.display = "block";
+        document.getElementById("password").style.display = "none";
+        event.target.style.display = "none";
+      } else {
+        alert("Niepoprawne hasło!");
+      }
+    }
+
+    async function sendMessage() {
+      const input = document.getElementById("chatInput");
+      const output = document.getElementById("output");
+      const msg = input.value.trim();
+      if (msg) {
+        output.innerHTML += `<p><strong>Ty:</strong> ${msg}</p>`;
+        input.value = "";
+
+        const res = await fetch("/api/search?q=" + encodeURIComponent(msg));
+        const data = await res.json();
+        const response = data.answer || "Nie udało się znaleźć odpowiedzi.";
+
+        output.innerHTML += `<p><strong>Grycjan:</strong> ${response}</p>`;
+        output.scrollTop = output.scrollHeight;
+      }
+    }
+  </script>
+</body>
+</html>
